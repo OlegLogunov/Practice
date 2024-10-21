@@ -52,6 +52,9 @@ class PriceAnalyzer:
         cursor.execute('''
             SELECT id, name, price, weight, file FROM products WHERE name LIKE ? ORDER BY price / weight
         ''', ('%' + search_text + '%',))
+
+        # print(cursor.fetchall())
+
         return cursor.fetchall()
 
     def export_to_html(self, output_file='prices.html'):
@@ -83,12 +86,18 @@ def main():
             break
 
         results = analyzer.find_text(search_text)
+
+        # print(enumerate(results))
+
         if results:
             print(f"{'№':<5} {'Наименование':<30} {'Цена':<10} {'Вес':<10} {'Файл':<20} {'Цена за кг':<10}")
-            for idx, (id_, name, price, weight, file) in enumerate(results):
-                price_per_kg = price / weight
 
-            print(f"{idx + 1:<5} {name:<30} {price:<10} {weight:<10} {file:<20} {price_per_kg:.2f}")
+            index = 1  # Начинаем с 1, чтобы номера начинались с 1
+            for id_, name, price, weight, file in results:
+                price_per_kg = price / weight if weight > 0 else 0  # Проверка на деление на ноль
+
+                print(f"{index:<5} {name:<30} {price:<10} {weight:<10} {file:<20} {price_per_kg:.2f}")
+                index += 1  # Увеличиваем индекс для следующей строки
         else:
             print("Товары не найдены.")
 
