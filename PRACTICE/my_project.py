@@ -75,8 +75,8 @@ class PriceAnalyzer:
 
 def main():
     analyzer = PriceAnalyzer()
-    # folder_path = input("Введите путь к папке с прайс-листами: ")
-    # analyzer.load_prices(folder_path)
+    folder_path = input("Введите путь к папке с прайс-листами: ")
+    analyzer.load_prices(folder_path)
 
     while True:
         search_text = input("Введите текст для поиска (или 'exit' для выхода): ")
@@ -99,7 +99,7 @@ def main():
         else:
             print("Товары не найдены.")
 
-    # analyzer.export_to_html()
+    analyzer.export_to_html()
     analyzer.close()
 
 if __name__ == '__main__':
