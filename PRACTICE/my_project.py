@@ -49,12 +49,10 @@ class PriceAnalyzer:
 
     def find_text(self, search_text):
         cursor = self.conn.cursor()
+        search_text_lower = search_text.lower()  # Приводим введенный текст к нижнему регистру
         cursor.execute('''
-            SELECT id, name, price, weight, file FROM products WHERE name LIKE ? ORDER BY price / weight
-        ''', ('%' + search_text + '%',))
-
-        # print(cursor.fetchall())
-
+            SELECT id, name, price, weight, file FROM products WHERE LOWER(name) LIKE LOWER(?) ORDER BY price / weight
+        ''', ('%' + search_text_lower + '%',))
         return cursor.fetchall()
 
     def export_to_html(self, output_file='prices.html'):
@@ -63,7 +61,8 @@ class PriceAnalyzer:
         rows = cursor.fetchall()
 
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write('<html><body><h1>Анализ прайс-листов</h1><table border="1">')
+            f.write('<html><head><meta charset="UTF-8"><title>Анализ прайс-листов</title></head><body>')
+            f.write('<h1>Анализ прайс-листов</h1>')
             f.write('<tr><th>№</th><th>Наименование</th><th>Цена</th><th>Вес</th><th>Файл</th><th>Цена за кг</th></tr>')
             for row in rows:
                 f.write(
@@ -76,8 +75,8 @@ class PriceAnalyzer:
 
 def main():
     analyzer = PriceAnalyzer()
-    folder_path = input("Введите путь к папке с прайс-листами: ")
-    analyzer.load_prices(folder_path)
+    # folder_path = input("Введите путь к папке с прайс-листами: ")
+    # analyzer.load_prices(folder_path)
 
     while True:
         search_text = input("Введите текст для поиска (или 'exit' для выхода): ")
@@ -87,7 +86,6 @@ def main():
 
         results = analyzer.find_text(search_text)
 
-        # print(enumerate(results))
 
         if results:
             print(f"{'№':<5} {'Наименование':<30} {'Цена':<10} {'Вес':<10} {'Файл':<20} {'Цена за кг':<10}")
@@ -101,7 +99,7 @@ def main():
         else:
             print("Товары не найдены.")
 
-    analyzer.export_to_html()
+    # analyzer.export_to_html()
     analyzer.close()
 
 if __name__ == '__main__':
